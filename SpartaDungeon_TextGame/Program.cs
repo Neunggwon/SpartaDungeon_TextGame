@@ -103,9 +103,7 @@ namespace SpartaDungeon_TextGame
                     break;
             }
         }
-
-        //인벤토리
-        public static void DisplayInventory(List<Item> Inventory)
+        public static void DisplayInventoryInfo(List<Item> Inventory)
         {
             Console.Clear();
             //Console.WriteLine("======================================================================");
@@ -120,50 +118,114 @@ namespace SpartaDungeon_TextGame
             table.Write();
             Console.WriteLine();
             //Console.ReadKey();
-            for (int i = 0; i < Inventory.Count; i++)
-                Console.WriteLine($"{i + 1}. {Inventory[i].Name} 장착/해제");
+            
+        }
+
+        //인벤토리
+        public static void DisplayInventory(List<Item> Inventory)
+        {
+            DisplayInventoryInfo(Inventory);
+            
+            Console.WriteLine($"1. 아이템 장착/ 해제");
+            Console.WriteLine($"2. 아이템 정렬");
             Console.WriteLine("0. 나가기");
             Console.Write(": ");
             int input = CheckValidInput(0, Inventory.Count);
-            if (input == 0)
+            switch (input)
             {
-                DisplayGameIntro();
+                case 0:
+                    //나가기
+                    DisplayGameIntro();
+                    break;
+                case 1:
+                    //장착
+                    DisplayInvemtoryEquip(Inventory);
+                    break;
+                case 2:
+                    //정렬
+                    DisplayInventorySort(Inventory);
+                    break;
             }
-            else
+            //장착
+            static void DisplayInvemtoryEquip(List<Item> Inventory)
             {
-                if (!Inventory[input - 1].Equip.Contains("[E]"))
+                DisplayInventoryInfo(Inventory);
+
+                for (int i = 0; i < Inventory.Count; i++)
+                    Console.WriteLine($"{i + 1}. {Inventory[i].Name} 장착/해제");
+                Console.WriteLine("0. 나가기");
+                Console.Write(": ");
+                int input = CheckValidInput(0, Inventory.Count);
+                if (input == 0)
                 {
-                    Console.WriteLine($"장착중..");
-                    Inventory[input - 1].Equip += "[E]";
-                    //Inventory[input - 1].Equip.Insert(0, "[E]");
-                    //player.Atk += Inventory[1].Atk;
-                    if (Inventory[input - 1].Type.Contains("공격력"))
-                    {
-                        player.Atk += Inventory[input - 1].Atk;
-                    }
-                    else if (Inventory[input - 1].Type.Contains("방어력"))
-                    {
-                        player.Def += Inventory[input - 1].Def;
-                    }
+                    DisplayInventory(Inventory);
                 }
                 else
                 {
-                    Console.WriteLine($"해제중..");
-                    Inventory[input - 1].Equip = "";
-
-                    if (Inventory[input - 1].Type.Contains("공격력"))
+                    if (!Inventory[input - 1].Equip.Contains("[E]"))
                     {
-                        player.Atk -= Inventory[input - 1].Atk;
+                        Console.WriteLine($"장착중..");
+                        Inventory[input - 1].Equip += "[E]";
+                        //Inventory[input - 1].Equip.Insert(0, "[E]");
+                        //player.Atk += Inventory[1].Atk;
+                        if (Inventory[input - 1].Type.Contains("공격력"))
+                        {
+                            player.Atk += Inventory[input - 1].Atk;
+                        }
+                        else if (Inventory[input - 1].Type.Contains("방어력"))
+                        {
+                            player.Def += Inventory[input - 1].Def;
+                        }
                     }
-                    else if (Inventory[input - 1].Type.Contains("방어력"))
+                    else
                     {
-                        player.Def -= Inventory[input - 1].Def;
+                        Console.WriteLine($"해제중..");
+                        Inventory[input - 1].Equip = "";
+
+                        if (Inventory[input - 1].Type.Contains("공격력"))
+                        {
+                            player.Atk -= Inventory[input - 1].Atk;
+                        }
+                        else if (Inventory[input - 1].Type.Contains("방어력"))
+                        {
+                            player.Def -= Inventory[input - 1].Def;
+                        }
                     }
                 }
-            }
-            Thread.Sleep(1000);
-            DisplayInventory(Inventory);
 
+                Thread.Sleep(1000);
+                DisplayInvemtoryEquip(Inventory);
+            }
+
+            //정렬
+            static void DisplayInventorySort(List<Item> Inventory)
+            {
+                DisplayInventoryInfo(Inventory);
+
+                Console.WriteLine($"1. 공격력 정렬");
+                Console.WriteLine($"2. 방어력 정렬");
+                Console.WriteLine("0. 나가기");
+                Console.Write(": ");
+                int input = CheckValidInput(0, Inventory.Count);
+                switch (input)
+                {
+                    case 0:
+                        //나가기
+                        DisplayInventory(Inventory);
+                        break;
+                    case 1:
+                        //공격력 높은 순
+                        List<Item> atkSortList = Inventory.OrderBy(x => x.Atk).Reverse().ToList();
+                        DisplayInventorySort(atkSortList);
+                        break;
+                    case 2:
+                        //방어력 높은 순
+                        List<Item> defSortList = Inventory.OrderBy(x => x.Def).Reverse().ToList();
+                        DisplayInventorySort(defSortList);
+                        break;
+                }
+                //DisplayInventorySort(Inventory);
+            }
         }
 
         // 오류가 있어 일단 주석
@@ -389,11 +451,12 @@ namespace SpartaDungeon_TextGame
             //}
             //else
             //{
+            //    if
             //    Thread.Sleep(1000);
             //    Console.WriteLine($"완료");
             //    IsSell();
             //}
-            
+
         }
     }
 
