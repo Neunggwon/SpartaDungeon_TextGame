@@ -8,9 +8,13 @@ namespace SpartaDungeon_TextGame
     internal class Program
     {
         private static Program program;
-        //public static ItemShop itemShop;
+        public static ItemShop itemShop;
         private static Character player;
         public static List<Item> Inventory = new List<Item>();
+        public static List<Item> Weapon = new List<Item>();
+        public static List<Item> Armor = new List<Item>();
+        public static List<Item> SecondaryWeapon = new List<Item>();
+
 
         static void Main(string[] args)
         {
@@ -29,16 +33,16 @@ namespace SpartaDungeon_TextGame
             // 캐릭터 정보 세팅
             player = new Character("Chad", "전사", 1, 10, 5, 100, 1500);
 
-            // 아이템 정보 세팅 - 이름, 타입, 공격력, 방어력, 골드, 설명, 입은 상태
-            Item ironArmor = new Item("무쇠갑옷", "방어력 +5", 0, 5, 500, "무쇠로 만들어져 튼튼한 갑옷입니다.", "");
+            // 아이템 정보 세팅 - 이름, 타입, 능력, 공격력, 방어력, 골드, 설명, 입은 상태
+            Item ironArmor = new Item("무쇠갑옷", "방어구", "방어력 +5", 0, 5, 500, "무쇠로 만들어져 튼튼한 갑옷입니다.", "");
             Inventory.Add(ironArmor);
-            Item oldSword = new Item("낡은 검", "공격력 +5", 5, 0, 500, "쉽게 볼 수 있는 낡은 검입니다.", "");
+            Item oldSword = new Item("낡은 검", "무기", "공격력 +5", 5, 0, 500, "쉽게 볼 수 있는 낡은 검입니다.", "");
             Inventory.Add(oldSword);
-            Item oldShield = new Item("낡은 방패", "방어력 +3", 0, 3, 300, "쉽게 볼 수 있는 낡은 방패입니다.", "");
+            Item oldShield = new Item("낡은 방패", "보조무기", "방어력 +3", 0, 3, 300, "쉽게 볼 수 있는 낡은 방패입니다.", "");
             Inventory.Add(oldShield);
-            Item potion = new Item("물약", "방어력", 0, 50, 0, "마시기만 해도 상처를 치료합니다.", "");
-            Inventory.Add(potion);
-        }
+            //Item potion = new Item("물약", "방어력", 0, 50, 0, "마시기만 해도 상처를 치료합니다.", "");
+
+    }
         //마을?
         public static void DisplayGameIntro()
         {
@@ -113,7 +117,7 @@ namespace SpartaDungeon_TextGame
             var table = new ConsoleTable("이름", "능력치", "설명");
             for (int i = 0; i < Inventory.Count; i++)
             {
-                table.AddRow($"{Inventory[i].Equip} {Inventory[i].Name} ", $"{Inventory[i].Type}", $"{Inventory[i].Explanation}");
+                table.AddRow($"{Inventory[i].Equip} {Inventory[i].Name} ", $"{Inventory[i].Ability}", $"{Inventory[i].Explanation}");
             }
             table.Write();
             Console.WriteLine();
@@ -139,7 +143,7 @@ namespace SpartaDungeon_TextGame
                     break;
                 case 1:
                     //장착
-                    DisplayInvemtoryEquip(Inventory);
+                    DisplayInvemtoryEquip(Inventory, Weapon, Armor, SecondaryWeapon);
                     break;
                 case 2:
                     //정렬
@@ -147,7 +151,7 @@ namespace SpartaDungeon_TextGame
                     break;
             }
             //장착
-            static void DisplayInvemtoryEquip(List<Item> Inventory)
+            static void DisplayInvemtoryEquip(List<Item> Inventory, List<Item> Weapon, List<Item> Armor, List<Item> SecondaryWeapon)
             {
                 DisplayInventoryInfo(Inventory);
 
@@ -166,35 +170,48 @@ namespace SpartaDungeon_TextGame
                     {
                         Console.WriteLine($"장착중..");
                         Inventory[input - 1].Equip += "[E]";
-                        //Inventory[input - 1].Equip.Insert(0, "[E]");
-                        //player.Atk += Inventory[1].Atk;
-                        if (Inventory[input - 1].Type.Contains("공격력"))
-                        {
-                            player.Atk += Inventory[input - 1].Atk;
-                        }
-                        else if (Inventory[input - 1].Type.Contains("방어력"))
-                        {
-                            player.Def += Inventory[input - 1].Def;
-                        }
+                        
+                        //Weapon.RemoveAt(0); //제거
+                        if (Inventory[input - 1].Type == "무기")
+                            Weapon.Add(Inventory[input - 1]); //추가
+                        else if (Inventory[input - 1].Type == "방어구")
+                            Armor.Add(Inventory[input - 1]);
+                        else if (Inventory[input - 1].Type == "보조무기")
+                            SecondaryWeapon.Add(Inventory[input - 1]);
+
+                        player.Atk += Inventory[input - 1].Atk;
+                        player.Def += Inventory[input - 1].Def;
+
+                        //player.Atk = player.Atk + Weapon[0].Atk + Armor[0].Atk + SecondaryWeapon[0].Atk;
+                        //player.Def = player.Def + Weapon[0].Def + Armor[0].Def + SecondaryWeapon[0].Def;
                     }
                     else
                     {
                         Console.WriteLine($"해제중..");
-                        Inventory[input - 1].Equip = "";
+                        //if (Weapon[0].Type == "무기")
+                        //    Weapon.RemoveAt(0);
+                        //else if (Armor[0].Type == "방어구")
+                        //    Armor.RemoveAt(0);
+                        //else if (SecondaryWeapon[0].Type == "보조무기")
+                        //    SecondaryWeapon.RemoveAt(0);
 
-                        if (Inventory[input - 1].Type.Contains("공격력"))
-                        {
-                            player.Atk -= Inventory[input - 1].Atk;
-                        }
-                        else if (Inventory[input - 1].Type.Contains("방어력"))
-                        {
-                            player.Def -= Inventory[input - 1].Def;
-                        }
+                        Inventory[input - 1].Equip = "";
+                        player.Atk -= Inventory[input - 1].Atk;
+                        player.Def -= Inventory[input - 1].Def;
+
+                        //player.Atk = player.Atk - Weapon[0].Atk - Armor[0].Atk - SecondaryWeapon[0].Atk;
+                        //player.Def = player.Def - Weapon[0].Def - Armor[0].Def - SecondaryWeapon[0].Def;
+
+                        //if (Inventory[input - 1].Type.Contains("공격력"))
+                        //{
+                        //}
+                        //else if (Inventory[input - 1].Type.Contains("방어력"))
+                        //{
+                        //}
                     }
                 }
-
                 Thread.Sleep(1000);
-                DisplayInvemtoryEquip(Inventory);
+                DisplayInvemtoryEquip(Inventory, Weapon, Armor, SecondaryWeapon);
             }
 
             //정렬
@@ -224,7 +241,6 @@ namespace SpartaDungeon_TextGame
                         DisplayInventorySort(defSortList);
                         break;
                 }
-                //DisplayInventorySort(Inventory);
             }
         }
 
@@ -293,17 +309,17 @@ namespace SpartaDungeon_TextGame
 
         static ItemShop()
         {
-            Item steelArmor = new Item("강철갑옷", "방어력 +10", 0, 10, 700, "단단한 강철로 만든 갑옷입니다.", "");
+            Item steelArmor = new Item("강철갑옷", "방어구", "방어력 +10", 0, 10, 700, "단단한 강철로 만든 갑옷입니다.", "");
             ItemShopList.Add(steelArmor);
-            Item steelSword = new Item("강철 검", "공격력 +10", 10, 0, 1000, "단단한 강철로 만든 검입니다.", "");
+            Item steelSword = new Item("강철 검", "무기", "공격력 +10", 10, 0, 1000, "단단한 강철로 만든 검입니다.", "");
             ItemShopList.Add(steelSword);
-            Item steelShield = new Item("강철 방패", "방어력 +5", 0, 5, 500, "단단한 강철로 만든 방패입니다.", "");
+            Item steelShield = new Item("강철 방패", "보조무기", "방어력 +5", 0, 5, 500, "단단한 강철로 만든 방패입니다.", "");
             ItemShopList.Add(steelShield);
-            Item legendArmor = new Item("전설의 갑옷", "방어력 +50", 0, 10, 30000, "전설의 갑옷이다.", "");
+            Item legendArmor = new Item("전설의 갑옷", "방어구", "방어력 +50", 0, 10, 30000, "전설의 갑옷이다.", "");
             ItemShopList.Add(legendArmor);
-            Item legendSword = new Item("전설의 검", "공격력 +50", 10, 0, 30000, "전설의 검이다", "");
+            Item legendSword = new Item("전설의 검", "무기", "공격력 +50", 10, 0, 30000, "전설의 검이다", "");
             ItemShopList.Add(legendSword);
-            Item legendShield = new Item("전설의 방패", "방어력 +30", 0, 5, 15000, "전설의 방패이다.", "");
+            Item legendShield = new Item("전설의 방패", "보조무기", "방어력 +30", 0, 5, 15000, "전설의 방패이다.", "");
             ItemShopList.Add(legendShield);
         }
 
@@ -318,7 +334,7 @@ namespace SpartaDungeon_TextGame
             var table = new ConsoleTable("이름", "능력치", "설명", "가격");
             for (int i = 0; i < ItemShopList.Count; i++)
             {
-                table.AddRow($"{ItemShopList[i].Name} ", $"{ItemShopList[i].Type}", $"{ItemShopList[i].Explanation}", $"{ItemShopList[i].Gold}G");
+                table.AddRow($"{ItemShopList[i].Name} ", $"{ItemShopList[i].Ability}", $"{ItemShopList[i].Explanation}", $"{ItemShopList[i].Gold}G");
             }
             table.Write();
             Console.WriteLine();
@@ -362,7 +378,7 @@ namespace SpartaDungeon_TextGame
             }
             table.Write();
             Console.WriteLine();
-            Console.WriteLine($"소지중인 골드 : {player.Gold}G");
+            //Console.WriteLine($"소지중인 골드 : {player.Gold}G");
             Console.WriteLine();
             //Console.ReadKey();
             for (int i = 0; i < ItemShopList.Count; i++)
@@ -420,45 +436,43 @@ namespace SpartaDungeon_TextGame
             Console.WriteLine("0. 나가기");
             Console.Write(": ");
             int input = Program.CheckValidInput(0, Program.Inventory.Count);
-            switch (input)
+            
+            if (input == 0)
             {
-                case 0:
-                    DisplayShop();
-                    break;
-                case 1:
-                    Program.Inventory.Remove(Program.Inventory[input - 1]);
-                    ItemShopList.Add(Program.Inventory[input - 1]);
-                    player.Gold += Program.Inventory[input - 1].Gold / 2;
-                    IsSell();
-                    break;
-                case 2:
-                    Program.Inventory.Remove(Program.Inventory[input - 1]);
-                    ItemShopList.Add(Program.Inventory[input - 1]);
-                    IsSell();
-                    break;
-                case 3:
-                    Program.Inventory.Remove(Program.Inventory[input - 1]);
-                    ItemShopList.Add(Program.Inventory[input - 1]);
-                    IsSell();
-                    break;
-                case 4:
-                    Console.WriteLine("물약");
-                    break;
+                DisplayShop();
             }
-            //if (input == 0)
-            //{
-            //    DisplayShop();
-            //}
-            //else
-            //{
-            //    if
-            //    Thread.Sleep(1000);
-            //    Console.WriteLine($"완료");
-            //    IsSell();
-            //}
+            else
+            {
+                if (!Program.Inventory[input - 1].Equip.Contains("[E]"))
+                {
+                    // 바로 판매
+                    Program.Inventory.Remove(Program.Inventory[input - 1]);
+                    player.Gold += (Program.Inventory[input - 1].Gold * 85 / 100);
+                }
+                else
+                {
+                    //장착 해제하고
+                    Console.WriteLine($"해제중..");
+                    Program.Inventory[input - 1].Equip = "";
+                    if (Program.Inventory[input - 1].Type.Contains("공격력"))
+                    {
+                        player.Atk -= Program.Inventory[input - 1].Atk;
+                    }
+                    else if (Program.Inventory[input - 1].Type.Contains("방어력"))
+                    {
+                        player.Def -= Program.Inventory[input - 1].Def;
+                    }
+                    //판매
+                    Program.Inventory.Remove(Program.Inventory[input - 1]);
+                    player.Gold += (Program.Inventory[input - 1].Gold * 85 / 100);
 
+                    Thread.Sleep(500);
+                }
+                IsSell();
+            }
         }
     }
+
 
     public class Character
     {
@@ -493,6 +507,7 @@ namespace SpartaDungeon_TextGame
         //이름
         public string Name { get; set; }
         public string Type { get; }
+        public string Ability { get; }
         public int Atk { get; }
         public int Def { get; }
         public int Heel { get; }
@@ -502,10 +517,11 @@ namespace SpartaDungeon_TextGame
         public string Equip { get; set; }
 
         //이름, 타입, 공격력, 방어력, 금액 , 설명, 장착
-        public Item(string name, string type, int atk, int def, int gold, string explanation, string equip)
+        public Item(string name, string type, string ability, int atk, int def, int gold, string explanation, string equip)
         {
             Name = name;
             Type = type;
+            Ability = ability;
             Atk = atk;
             Def = def;
             Gold = gold;
