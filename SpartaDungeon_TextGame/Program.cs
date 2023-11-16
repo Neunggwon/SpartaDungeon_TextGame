@@ -5,6 +5,9 @@ using System.Net.NetworkInformation;
 
 namespace SpartaDungeon_TextGame
 {
+    //test_1
+    //test_3
+    //test_4
     internal class Program
     {
         private static Program program;
