@@ -14,7 +14,7 @@ namespace SpartaDungeon_TextGame
         public static List<Item> Weapon = new List<Item>();
         public static List<Item> Armor = new List<Item>();
         public static List<Item> SecondaryWeapon = new List<Item>();
-
+        //test2
 
         static void Main(string[] args)
         {
